@@ -4,6 +4,7 @@ ENV['SESSION_SECRET'] ||= 'T30S7Xh1X1ispHb_Z0Qp7A6pLijJo8esnPjOWcFCIONQNKgdma-DA
 ENV['RACK_ENV'] = 'test'
 
 require 'simplecov'
+SimpleCov.coverage_dir('spec/coverage')
 SimpleCov.start
 require 'dotenv'
 Dotenv.load
@@ -14,19 +15,19 @@ require 'vcr'
 require 'webmock'
 require 'rack/test'
 
-require_relative '../app/application/controllers/app'
-require_relative '../app/infrastructure/amadeus/gateways/amadeus_api'
-require_relative '../app/infrastructure/gemini/gateways/gemini_api'
-require_relative '../app/infrastructure/nytimes/gateways/nytimes_api'
-require_relative '../app/infrastructure/amadeus/mappers/flight_mapper'
-require_relative '../app/infrastructure/nytimes/mappers/article_mapper'
-require_relative '../app/domain/entities/flight'
-require_relative '../app/domain/entities/article'
+require_relative '../../app/application/controllers/app'
+require_relative '../../app/infrastructure/amadeus/gateways/amadeus_api'
+require_relative '../../app/infrastructure/gemini/gateways/gemini_api'
+require_relative '../../app/infrastructure/nytimes/gateways/nytimes_api'
+require_relative '../../app/infrastructure/amadeus/mappers/flight_mapper'
+require_relative '../../app/infrastructure/nytimes/mappers/article_mapper'
+require_relative '../../app/domain/entities/flight'
+require_relative '../../app/domain/entities/article'
 require_relative 'database_helper'
 
 curr_dir = __dir__
-CORRECT_NYT = YAML.load_file("#{curr_dir}/fixtures/nytimes-results.yml")
-CORRECT_FLIGHTS = YAML.load_file("#{curr_dir}/fixtures/flight-offers-results.yml")
+CORRECT_NYT = YAML.load_file("#{curr_dir}/../fixtures/nytimes-results.yml")
+CORRECT_FLIGHTS = YAML.load_file("#{curr_dir}/../fixtures/flight-offers-results.yml")
 
 CASSETTES_FOLDER = 'spec/fixtures/cassettes'
 CASSETTE_FILE_NYT = 'nyt_api'

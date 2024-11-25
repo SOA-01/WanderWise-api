@@ -2,8 +2,8 @@
 
 require 'webmock/rspec'
 require 'vcr'
-require_relative '../../../app/application/services/add_flights'
-require_relative '../../../app/infrastructure/database/repositories/flights'
+require_relative '../../../../app/application/services/add_flights'
+require_relative '../../../../app/infrastructure/database/repositories/flights'
 
 RSpec.describe WanderWise::Service::AddFlights do # rubocop:disable Metrics/BlockLength
   include Rack::Test::Methods

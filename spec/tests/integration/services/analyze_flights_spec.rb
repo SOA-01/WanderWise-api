@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
 require 'webmock/rspec'
-require_relative '../../../app/application/services/analyze_flights'
-require_relative '../../../app/infrastructure/database/repositories/flights'
+require_relative '../../../../app/application/services/analyze_flights'
+require_relative '../../../../app/infrastructure/database/repositories/flights'
 
 RSpec.describe WanderWise::Service::AnalyzeFlights do # rubocop:disable Metrics/BlockLength
   let(:analyze_flights_service) { described_class.new }

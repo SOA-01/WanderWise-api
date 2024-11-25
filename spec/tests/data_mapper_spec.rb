@@ -7,7 +7,7 @@ require_relative 'spec_helper'
 require 'vcr'
 
 RSpec.describe WanderWise::FlightMapper do # rubocop:disable Metrics/BlockLength
-  VCR.configure do |c| 
+  VCR.configure do |c|
     c.cassette_library_dir = CASSETTES_FOLDER
     c.hook_into :webmock
   end
@@ -36,7 +36,7 @@ RSpec.describe WanderWise::FlightMapper do # rubocop:disable Metrics/BlockLength
 
       date_next_week = (Date.today + 7).to_s
       params = { originLocationCode: 'TPE', destinationLocationCode: 'LAX', departureDate: date_next_week, adults: 1 }
-      
+
       flight = mapper.find_flight(params).first
 
       expect(flight).to be_a(WanderWise::Flight)
@@ -44,8 +44,6 @@ RSpec.describe WanderWise::FlightMapper do # rubocop:disable Metrics/BlockLength
       expect(flight.destination_location_code).to eq(fixture_data['data'].first.dig('itineraries', 0, 'segments', -1, 'arrival', 'iataCode'))
     end
   end
-
-  
 end
 
 RSpec.describe WanderWise::ArticleMapper do
@@ -71,7 +69,7 @@ RSpec.describe WanderWise::ArticleMapper do
   describe '#find_articles' do
     it 'transforms API response into an array of ArticleEntity objects' do
       articles = mapper.find_articles('Taiwan')
-      
+
       expect(articles).to be_an(Array)
       expect(articles.first).to be_a(WanderWise::Article)
       # expect(articles.first.title).to eq(fixture_articles.first.dig('headline', 'main'))
