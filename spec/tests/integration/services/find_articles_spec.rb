@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 require 'webmock/rspec'
-require_relative '../../../app/application/services/find_articles'
+require_relative '../../../../app/application/services/find_articles'
 
 RSpec.describe WanderWise::Service::FindArticles do # rubocop:disable Metrics/BlockLength
   let(:find_articles_service) { described_class.new }

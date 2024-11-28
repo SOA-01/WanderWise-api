@@ -4,7 +4,6 @@ require 'roda'
 require 'slim'
 require 'figaro'
 require 'securerandom'
-require_relative '../forms/new_flight'
 require 'logger'
 
 module WanderWise
@@ -95,6 +94,9 @@ module WanderWise
         historical_flight_data = Views::HistoricalFlightData.new(analyze_flights.value![:historical_average_data],
                                                                  analyze_flights.value![:historical_lowest_data])
         destination_country = Views::Country.new(country)
+
+        # TODO: - REFACTOR GEMINI API CALL
+
         # Step 6: Ask AI for opinion on the destination
         gemini_api = WanderWise::GeminiAPI.new
         gemini_mapper = WanderWise::GeminiMapper.new(gemini_api)
