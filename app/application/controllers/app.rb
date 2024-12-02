@@ -1,18 +1,22 @@
 # frozen_string_literal: true
 
 require 'roda'
+require 'rack'
 require 'slim'
 require 'figaro'
 require 'securerandom'
 require 'logger'
 
+require_relative '../../presentation/representer/http_response'
+require_relative '../../presentation/responses/api_result'
+require_relative '../requests/new_flight'
+
 module WanderWise
   # Main application class for WanderWise
   class App < Roda
     plugin :flash
-    plugin :render, engine: 'slim', views: 'app/presentation/views_html'
-    plugin :assets, css: 'style.css', path: 'app/presentation/assets'
     plugin :halt
+    plugin :all_verbs
     plugin :sessions, secret: ENV['SESSION_SECRET']
 
     # Create a logger instance (you can change the log file path as needed)
@@ -21,8 +25,6 @@ module WanderWise
     end
 
     route do |routing| # rubocop:disable Metrics/BlockLength
-      routing.assets
-
       # Example of setting session data
       routing.get 'set_session' do
         session[:watching] = 'Some value'
@@ -39,27 +41,35 @@ module WanderWise
       routing.root do
         # Get cookie viewers from session
         # session[:watching] ||= []
+        message = 'WanderWise API v1 at /api/v1/ in development mode'
+        result_response = WanderWise::Representer::HttpResponse.new(
+          WanderWise::Response::ApiResult.new(status: :ok, message:)
+        )
 
-        view 'home'
+        response.status = result_response.http_status_code
+        result_response.to_json
       end
 
       # POST /submit - Handle submitting flight data
       routing.post 'submit' do # rubocop:disable Metrics/BlockLength
         # Step 0: Validate form data
-        request = WanderWise::Forms::NewFlight.new.call(routing.params)
+
+        request = WanderWise::Requests::NewFlightRequest.new(routing.params).call
         if request.failure?
-          request.errors.each do |error|
-            session[:flash] = { error: error.message }
-          end
+          session[:flash] = { error: request.failure.message }
           routing.redirect '/'
         end
 
         flight_made = Service::AddFlights.new.call(request.to_h)
 
         if flight_made.failure?
-          session[:flash] = { error: flight_made.failure }
-          routing.redirect '/'
+          failed = Representer::HttpResponse.new(result.failure)
+          routing.halt failed.http_status_code, failed.to_json
         end
+
+        http_response = Representer::HttpResponse.new(result.value!)
+        response.status = http_response.http_status_code
+        Representer::Project.new(result.value!.message).to_json
 
         flight_data = flight_made.value!
 
