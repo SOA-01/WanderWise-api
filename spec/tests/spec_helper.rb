@@ -39,4 +39,5 @@ VCR.configure do |config|
   config.filter_sensitive_data('<AMAD_CLIENT_ID>') { ENV['AMADEUS_CLIENT_ID'] }
   config.filter_sensitive_data('<NYT_API_KEY>') { ENV['NYTIMES_API_KEY'] }
   config.configure_rspec_metadata!
+  config.allow_http_connections_when_no_cassette = true
 end

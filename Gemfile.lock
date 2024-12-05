@@ -248,6 +248,7 @@ PLATFORMS
 DEPENDENCIES
   airports
   dotenv
+  dry-monads
   dry-struct
   dry-transaction
   dry-types

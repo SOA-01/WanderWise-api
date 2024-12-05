@@ -17,19 +17,19 @@ end
 task :test do
   if ENV['RACK_ENV'] == 'production'
     puts 'Running tests in production mode'
-    sh 'RACK_ENV=production COVERAGE=1 rspec spec/app_spec.rb'
-    sh 'RACK_ENV=production COVERAGE=1 rspec spec/api_spec.rb'
-    sh 'RACK_ENV=production COVERAGE=1 rspec spec/data_mapper_spec.rb'
+    sh 'RACK_ENV=production COVERAGE=1 rspec spec/tests/app_spec.rb'
+    sh 'RACK_ENV=production COVERAGE=1 rspec spec/tests/api_spec.rb'
+    sh 'RACK_ENV=production COVERAGE=1 rspec spec/tests/data_mapper_spec.rb'
   else
     puts 'Running tests in development mode'
-    sh 'RACK_ENV=development COVERAGE=1 rspec spec/app_spec.rb'
-    sh 'RACK_ENV=development COVERAGE=1 rspec spec/api_spec.rb'
-    sh 'RACK_ENV=development COVERAGE=1 rspec spec/data_mapper_spec.rb'
+    sh 'RACK_ENV=development COVERAGE=1 rspec spec/tests/app_spec.rb'
+    sh 'RACK_ENV=development COVERAGE=1 rspec spec/tests/api_spec.rb'
+    sh 'RACK_ENV=development COVERAGE=1 rspec spec/tests/data_mapper_spec.rb'
   end
 end
 
 task :spec do
-  ruby 'spec/spec_helper.rb'
+  ruby 'spec/tests/spec_helper.rb'
 end
 
 task :new_session_secret do
@@ -64,7 +64,7 @@ namespace :db do # rubocop:disable Metrics/BlockLength
   task :config do
     require 'sequel'
     require_relative 'config/environment' # load config info
-    require_relative 'spec/database_helper'
+    require_relative 'spec/tests/database_helper'
     def app = WanderWise::App
   end
 

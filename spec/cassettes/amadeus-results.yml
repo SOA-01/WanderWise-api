@@ -582,4 +582,106 @@ http_interactions:
         DATA MISSING","detail":"departureDate needed","source":{"pointer":"departureDate"}},{"status":400,"code":32171,"title":"MANDATORY
         DATA MISSING","detail":"originLocationCode needed","source":{"pointer":"originLocationCode"}}]}'
   recorded_at: Mon, 25 Nov 2024 04:01:51 GMT
+- request:
+    method: get
+    uri: https://test.api.amadeus.com/v2/shopping/flight-offers?adults=1&departureDate=2024-12-10&destinationLocationCode=LAX&originLocationCode=TPE
+    body:
+      encoding: ASCII-8BIT
+      string: ''
+    headers:
+      Authorization:
+      - Bearer GcxnYUMp2z4zxwLneMe9rWfGLORY
+      Connection:
+      - close
+      Host:
+      - test.api.amadeus.com
+      User-Agent:
+      - http.rb/5.2.0
+  response:
+    status:
+      code: 401
+      message: Unauthorized
+    headers:
+      Date:
+      - Tue, 03 Dec 2024 11:50:14 GMT
+      Content-Type:
+      - application/vnd.amadeus+json
+      Content-Length:
+      - '387'
+      Connection:
+      - close
+      Www-Authenticate:
+      - 'Bearer realm="null",error="invalid_token",error_description="keymanagement.service.invalid_access_token:
+        Invalid Access Token"'
+      Ama-Gateway-Request-Id:
+      - rrt-00979121a8aecaa6a-b-eu-66481-146766806-1
+      Access-Control-Allow-Headers:
+      - origin, x-requested-with, accept, Content-Type, Authorization
+      Access-Control-Max-Age:
+      - '3628800'
+      Access-Control-Allow-Methods:
+      - "*"
+      Server:
+      - Amadeus
+      Access-Control-Allow-Origin:
+      - "*"
+    body:
+      encoding: ASCII-8BIT
+      string: "\n            {\n                \"errors\": [\n                        {\n
+        \                           \"code\": 38190,\n                            \"title\":
+        \"Invalid access token\",\n                            \"detail\": \"The access
+        token provided in the Authorization header is invalid\",\n                            \"status\":
+        401\n                        }\n                ]\n            }\n        "
+  recorded_at: Tue, 03 Dec 2024 11:50:14 GMT
+- request:
+    method: get
+    uri: https://test.api.amadeus.com/v2/shopping/flight-offers?adults=1&departure_date=2024-12-10&destination_location_code=LAX&origin_location_code=TPE
+    body:
+      encoding: ASCII-8BIT
+      string: ''
+    headers:
+      Authorization:
+      - Bearer GcxnYUMp2z4zxwLneMe9rWfGLORY
+      Connection:
+      - close
+      Host:
+      - test.api.amadeus.com
+      User-Agent:
+      - http.rb/5.2.0
+  response:
+    status:
+      code: 401
+      message: Unauthorized
+    headers:
+      Date:
+      - Tue, 03 Dec 2024 14:01:50 GMT
+      Content-Type:
+      - application/vnd.amadeus+json
+      Content-Length:
+      - '387'
+      Connection:
+      - close
+      Www-Authenticate:
+      - 'Bearer realm="null",error="invalid_token",error_description="keymanagement.service.invalid_access_token:
+        Invalid Access Token"'
+      Ama-Gateway-Request-Id:
+      - rrt-0bc5b648f54bfcfef-a-eu-1309592-142058697-1
+      Access-Control-Allow-Headers:
+      - origin, x-requested-with, accept, Content-Type, Authorization
+      Access-Control-Max-Age:
+      - '3628800'
+      Access-Control-Allow-Methods:
+      - "*"
+      Server:
+      - Amadeus
+      Access-Control-Allow-Origin:
+      - "*"
+    body:
+      encoding: ASCII-8BIT
+      string: "\n            {\n                \"errors\": [\n                        {\n
+        \                           \"code\": 38190,\n                            \"title\":
+        \"Invalid access token\",\n                            \"detail\": \"The access
+        token provided in the Authorization header is invalid\",\n                            \"status\":
+        401\n                        }\n                ]\n            }\n        "
+  recorded_at: Tue, 03 Dec 2024 14:01:50 GMT
 recorded_with: VCR 6.3.1

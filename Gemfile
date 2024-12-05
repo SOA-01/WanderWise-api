@@ -33,6 +33,7 @@ gem 'hirb'
 gem 'logger'
 gem 'dotenv'
 gem 'ostruct'
+gem 'dry-monads'
 
 group :production do
   gem 'pg'

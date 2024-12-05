@@ -2,12 +2,14 @@
 
 require 'roar/decorator'
 require 'roar/json'
+require 'roar/hypermedia'
 
 module WanderWise
   module Representer
     # Represents a collection of flights for JSON API output
     class FlightRepresenter < Roar::Decorator
       include Roar::JSON
+      include Roar::Hypermedia
 
       property :id
       property :origin_location_code

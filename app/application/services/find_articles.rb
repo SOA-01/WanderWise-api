@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'dry/transaction'
+require 'logger'
 
 module WanderWise
   module Service
@@ -13,23 +14,43 @@ module WanderWise
       private
 
       def find_articles(input)
-        input = articles_from_news_api(input)
+        result = articles_from_news_api(input)
 
-        Success(input.value!)
-      rescue StandardError
+        if result.failure?
+          logger.error("Failed to find articles: #{result.failure}")
+          return result
+        end
+
+        Success(result.value!)
+      rescue StandardError => e
+        logger.error("Error finding articles: #{e.message}")
         Failure('No articles found for the given criteria.')
       end
 
       def articles_from_news_api(input)
         news_api = NYTimesAPI.new
         article_mapper = ArticleMapper.new(news_api)
-        article_data = article_mapper.find_articles(input)
-
-        if article_data.empty? || article_data.nil?
-          Failure('No articles found for the given criteria.')
+        result = article_mapper.find_articles(input)
+      
+        case result
+        when Success
+          articles = result.value!
+          if articles.nil? || articles.empty?
+            logger.error("No articles found for the given criteria: #{input}")
+            return Failure('No articles found for the given criteria.')
+          end
+        when Failure
+          return result
         else
-          Success(article_data)
+          logger.error("Unexpected result from article mapper: #{result}")
+          return Failure('Unexpected error finding articles')
         end
+      
+        Success(articles)
+      end      
+
+      def logger
+        @logger ||= Logger.new(STDOUT)
       end
     end
   end
