@@ -8,7 +8,7 @@ module WanderWise
   module Requests
     # Parses and validates HTTP request data for new flight creation
     class NewFlightRequest
-      include Dry::Monads[:result]
+      include Dry::Monads::Result::Mixin
 
       def initialize(params)
         @params = params
@@ -16,7 +16,7 @@ module WanderWise
 
       def call
         Success(
-          JSON.parse(decode(@params['list']))
+          @params
         )
       rescue StandardError
         Failure(

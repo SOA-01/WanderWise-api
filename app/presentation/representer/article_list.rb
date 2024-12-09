@@ -11,7 +11,7 @@ module WanderWise
     class ArticlesRepresenter < Roar::Decorator
       include Roar::JSON
 
-      collection :articles, extend: Representers::ArticleRepresenter, class: OpenStruct
+      collection :articles, extend: Representer::ArticleRepresenter, class: OpenStruct
     end
   end
 end

@@ -78,6 +78,15 @@ namespace :db do # rubocop:disable Metrics/BlockLength
     Sequel::Migrator.run(app.db, 'db/migrations')
   end
 
+  task migrate_test: :config do
+    Sequel.extension :migration
+    puts 'Migrating test database to latest'
+    puts "Migration path: #{Dir.pwd}/db/migrations"
+    puts 'Files in migration path:'
+    puts Dir.entries('db/migrations') # This should list your migration files
+    Sequel::Migrator.run(app.db, 'db/migrations')
+  end
+
   desc 'Wipe records from all tables'
   task wipe: :config do
     if app.environment == :production
@@ -90,6 +99,15 @@ namespace :db do # rubocop:disable Metrics/BlockLength
 
   desc 'Delete dev or test database file (set correct RACK_ENV)'
   task drop: :config do
+    if app.environment == :production
+      puts 'Do not damage production database!'
+      return
+    end
+    FileUtils.rm(WanderWise::App.config.DB_FILENAME)
+    puts "Deleted #{WanderWise::App.config.DB_FILENAME}"
+  end
+
+  task drop_test: :config do
     if app.environment == :production
       puts 'Do not damage production database!'
       return

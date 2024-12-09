@@ -54,6 +54,8 @@ module WanderWise
           input.first.destination_location_code
         )
 
+        logger.debug("Lowest price: #{lowest_price}")
+
         if lowest_price.nil? || lowest_price <= 0
           logger.error("Historical lowest price not found or invalid for: #{input}")
           return Failure('Could not retrieve historical lowest data')
@@ -66,7 +68,7 @@ module WanderWise
       end
 
       def logger
-        @logger ||= Logger.new(STDOUT)
+        @logger ||= Logger.new($stdout)
       end
     end
   end

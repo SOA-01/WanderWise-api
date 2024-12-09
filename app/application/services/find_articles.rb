@@ -31,7 +31,7 @@ module WanderWise
         news_api = NYTimesAPI.new
         article_mapper = ArticleMapper.new(news_api)
         result = article_mapper.find_articles(input)
-      
+
         case result
         when Success
           articles = result.value!
@@ -45,12 +45,12 @@ module WanderWise
           logger.error("Unexpected result from article mapper: #{result}")
           return Failure('Unexpected error finding articles')
         end
-      
+
         Success(articles)
-      end      
+      end
 
       def logger
-        @logger ||= Logger.new(STDOUT)
+        @logger ||= Logger.new($stdout)
       end
     end
   end

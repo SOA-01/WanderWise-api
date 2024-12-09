@@ -27,31 +27,29 @@ RSpec.describe WanderWise::Service::AddFlights do
   describe '#find_flights' do
     context 'when flights are found' do
       before do
-        puts "Mocking AmadeusAPI to return empty data"  # Debug line
+        puts 'Mocking AmadeusAPI to return empty data' # Debug line
         allow_any_instance_of(WanderWise::AmadeusAPI).to receive(:find_flights).and_return(flight_data)
       end
-    
+
       it 'returns Failure with an error message when no flights are found' do
-        VCR.use_cassette("amadeus_flight_search") do
+        VCR.use_cassette('amadeus_flight_search') do
           result = add_flights_service.send(:find_flights, input)
-          puts "Result of find_flights: #{result}"  # Debug line
+          puts "Result of find_flights: #{result}" # Debug line
           expect(result).to be_a(Dry::Monads::Result::Failure)
-          expect(result.failure).to eq("Could not find flight data")  # Adjusted to expect symbol as failure message
+          expect(result.failure).to eq('Could not find flight data') # Adjusted to expect symbol as failure message
         end
       end
     end
-  
-  
 
     context 'when no flights are found' do
       before do
-        puts "Mocking AmadeusAPI to return empty data"  # Debug line
+        puts 'Mocking AmadeusAPI to return empty data' # Debug line
         allow_any_instance_of(WanderWise::AmadeusAPI).to receive(:find_flights).and_return([])
       end
 
       it 'returns Failure' do
         result = add_flights_service.send(:find_flights, [])
-        puts "Result when no flights are found: #{result}"  # Debug line
+        puts "Result when no flights are found: #{result}" # Debug line
         expect(result).to be_a(Dry::Monads::Result::Failure)
         expect(result.failure).to eq('Could not find flight data')
       end
@@ -61,7 +59,7 @@ RSpec.describe WanderWise::Service::AddFlights do
   describe '#store_flights' do
     context 'when storing flights is successful' do
       before do
-        puts "Mocking successful flight storage"  # Debug line
+        puts 'Mocking successful flight storage' # Debug line
         allow(WanderWise::Repository::For.klass(Entity::Flight)).to receive(:create_many).and_return(flight_data)
       end
 
@@ -74,19 +72,18 @@ RSpec.describe WanderWise::Service::AddFlights do
 
     context 'when storing flights fails' do
       before do
-        puts "Mocking failure in storing flights"  # Debug line
+        puts 'Mocking failure in storing flights'  # Debug line
         allow(WanderWise::Repository::For.klass(Entity::Flight)).to receive(:create_many).and_raise(StandardError, 'Database error')
       end
 
       it 'returns Failure with an error message' do
         result = add_flights_service.send(:store_flights, Dry::Monads::Success(flight_data))
-        puts "Result of store_flights when failed: #{result}"  # Debug line
+        puts "Result of store_flights when failed: #{result}" # Debug line
         expect(result).to be_a(Dry::Monads::Result::Failure)
         expect(result.failure).to eq('Could not save flight data')
       end
     end
   end
-
 
   describe '#call' do
     context 'when the transaction fails at find_flights' do
@@ -95,33 +92,32 @@ RSpec.describe WanderWise::Service::AddFlights do
           allow_any_instance_of(WanderWise::AmadeusAPI).to receive(:find_flight).and_return([])
         end
       end
-    
+
       it 'returns Failure' do
         result = add_flights_service.call([])
         expect(result).to be_a(Dry::Monads::Result::Failure)
         expect(result.failure).to eq('Could not find flight data')
       end
     end
-  
 
     context 'when the transaction fails at store_flights' do
       before do
         # Wrap the OAuth token request in a VCR cassette
         VCR.use_cassette('amadeus_oauth_token') do
-          puts "Mocking find_flight to return: #{flight_data.inspect}"  # Debug log
+          puts "Mocking find_flight to return: #{flight_data.inspect}" # Debug log
           allow_any_instance_of(WanderWise::AmadeusAPI).to receive(:find_flight).and_return(flight_data)
         end
         # Simulate failure during storing flights
         allow(WanderWise::Repository::For.klass(Entity::Flight))
           .to receive(:create_many).and_raise(StandardError, 'Database error')
-        puts "Simulating database error in create_many"  # Debug log
+        puts 'Simulating database error in create_many' # Debug log
       end
-    
+
       it 'returns Failure' do
         result = add_flights_service.call(input)
         expect(result).to be_a(Dry::Monads::Result::Failure)
         expect(result.failure).to eq('Could not save flight data')
       end
-    end           
+    end
   end
 end

@@ -14,6 +14,8 @@ require 'minitest/autorun'
 require 'vcr'
 require 'webmock'
 require 'rack/test'
+require_relative '../../require_app'
+require_app
 
 require_relative '../../app/application/controllers/app'
 require_relative '../../app/infrastructure/amadeus/gateways/amadeus_api'
