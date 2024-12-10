@@ -11,7 +11,7 @@ module WanderWise
     class FlightsRepresenter < Roar::Decorator
       include Roar::JSON
 
-      collection :flights, extend: Representers::FlightRepresenter, class: OpenStruct
+      collection :flights, extend: Representer::FlightRepresenter, class: OpenStruct
     end
   end
 end

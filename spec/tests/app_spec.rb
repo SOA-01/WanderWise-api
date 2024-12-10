@@ -36,13 +36,13 @@ RSpec.describe WanderWise::App do # rubocop:disable Metrics/BlockLength
     it 'renders the home view' do
       get '/'
       expect(last_response.status).to eq(200)
-  
+
       # Check the JSON response matches HttpResponse structure
       expected_response = {
         status: 'ok',
         message: 'WanderWise API v1 at /api/v1/ in development mode'
       }.to_json
-  
+
       expect(last_response.body).to eq(expected_response)
     end
   end

@@ -28,29 +28,24 @@ module WanderWise
       end
 
       def articles_from_news_api(input)
-        news_api = NYTimesAPI.new
-        article_mapper = ArticleMapper.new(news_api)
-        result = article_mapper.find_articles(input)
-      
-        case result
-        when Success
-          articles = result.value!
-          if articles.nil? || articles.empty?
-            logger.error("No articles found for the given criteria: #{input}")
-            return Failure('No articles found for the given criteria.')
-          end
-        when Failure
-          return result
-        else
-          logger.error("Unexpected result from article mapper: #{result}")
-          return Failure('Unexpected error finding articles')
+        logger.info('Creating article mapper')
+        api_gateway = NYTimesAPI.new
+        article_mapper = ArticleMapper.new(api_gateway)
+        logger.info("Finding articles for: #{input}")
+        articles = article_mapper.find_articles(input)
+        logger.debug("Articles from: #{articles.first(2)}")
+        if articles.nil? || articles.empty?
+          logger.error("No articles found for the given criteria: #{input}")
+          return Failure('No articles found for the given criteria.')
         end
-      
         Success(articles)
-      end      
+      rescue StandardError
+        logger.error("Unexpected result from article mapper: #{articles}")
+        Failure('Unexpected error finding articles')
+      end
 
       def logger
-        @logger ||= Logger.new(STDOUT)
+        @logger ||= Logger.new($stdout)
       end
     end
   end
