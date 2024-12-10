@@ -71,7 +71,7 @@ module WanderWise
       end
 
       def self.find_best_price_from_to(origin_location_code, destination_location_code)
-        #find the lowest price for a flight from origin to destination
+        # find the lowest price for a flight from origin to destination
         Database::FlightOrm.where(origin_location_code: origin_location_code, destination_location_code: destination_location_code).min(:price)
       end
 

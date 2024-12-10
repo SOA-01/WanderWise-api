@@ -12,9 +12,9 @@ module WanderWise
 
     # Find and map articles to entity
     def find_articles(keyword)
+      puts "Searching gateway for articles of: #{keyword}"
       articles_data = fetch_articles_data(keyword)
       docs = ArticleDataExtractor.extract_docs(articles_data)
-
       # Map the articles to entities
       docs.map { |article_data| ArticleBuilder.build(article_data) }
     end
@@ -55,7 +55,9 @@ module WanderWise
       docs = response['docs']
 
       # Error handling for bad API responses
-      raise "Unexpected response from NYTimes API: #{articles_data.inspect}" unless articles_data.is_a?(Hash) && response && docs
+      unless articles_data.is_a?(Hash) && response.is_a?(Hash) && docs.is_a?(Array)
+        raise "Unexpected response from NYTimes API: #{articles_data.inspect}"
+      end
 
       docs
     end

@@ -37,13 +37,12 @@ module WanderWise
         Failure('Could not find flight data')
       end
 
-
       def store_flights(input)
-        logger.debug("Storing flight data")
+        logger.debug('Storing flight data')
 
         Repository::For.klass(Entity::Flight).create_many(input)
 
-        logger.debug("Successfully stored flight data")
+        logger.debug('Successfully stored flight data')
         Success(input)
       rescue StandardError => e
         logger.error("Error saving flights: #{e.message}")
@@ -65,8 +64,8 @@ module WanderWise
         logger.debug("Flight data retrieved: #{flight_data.first(5)}")
         Success(flight_data)
       end
-      private
 
+      private
 
       def logger
         @logger ||= Logger.new($stdout)

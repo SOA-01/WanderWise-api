@@ -102,14 +102,13 @@ module WanderWise
             country_data = country.value!
 
             # Step 3: Analyze historical flight data
-            analyze_flights = Service::AnalyzeFlights.new.call(flight_data)
-            if analyze_flights.failure?
-              session[:flash] = { error: analyze_flights.failure }
+            flights_analysis = Service::AnalyzeFlights.new.call(flight_data)
+            if flights_analysis.failure?
+              session[:flash] = { error: flights_analysis.failure }
               routing.redirect '/'
             end
 
             # Step 4: Retrieve articles
-            # --- DEBUG FROM HERE ---, check mapper
             article_made = Service::FindArticles.new.call(country_data)
             if article_made.failure?
               session[:flash] = { error: article_made.failure }
@@ -117,36 +116,38 @@ module WanderWise
             end
             nytimes_articles = article_made.value!
 
-            # Step 5: Prepare data for the view
-            retrieved_flights = Representer::FlightList.new(flight_data).to_hash
-            retrieved_articles = Views::ArticleList.new(nytimes_articles) # Ensure representer exists
-            historical_flight_data = Views::HistoricalFlightData.new(
-              analyze_flights.value![:historical_average_data],
-              analyze_flights.value![:historical_lowest_data]
-            )
-            destination_country = Views::Country.new(country_data)
-
-            # Step 6: Ask AI for opinion on the destination
-            gemini_api = WanderWise::GeminiAPI.new
-            gemini_mapper = WanderWise::GeminiMapper.new(gemini_api)
-
-            month = routing.params['departureDate'].split('-')[1].to_i
-            destination = routing.params['destinationLocationCode']
-            origin = routing.params['originLocationCode']
-            gemini_answer = gemini_mapper.find_gemini_data(
-              "What is your opinion on #{destination} in #{month}?" \
-              "Based on historical data, the average price for a flight from #{origin} to #{destination} is $#{historical_flight_data.historical_average_data}." \
-              "Does it seem safe based on recent news articles: #{nytimes_articles}?"
+            # Step 5: Prepare data for the view -- DEBUG from here
+            logger.info 'Preparing data for view'
+            retrieved_flights = Representer::FlightsRepresenter.new(flight_data)
+            retrieved_articles = Representer::ArticlesRepresenter.new(nytimes_articles)
+            misc_data = Representer::MiscData.new(
+              [flights_analysis.value![:historical_average_data],
+               flights_analysis.value![:historical_lowest_data], country_data]
             )
 
-            # Render the results view with all gathered data
-            view 'results', locals: {
-              flight_data: retrieved_flights,
-              country: destination_country,
-              nytimes_articles: retrieved_articles,
-              gemini_answer: gemini_answer,
-              historical_data: historical_flight_data
-            }
+            # logger.info 'AI calls'
+            # # Step 6: Ask AI for opinion on the destination
+            # gemini_api = WanderWise::GeminiAPI.new
+            # gemini_mapper = WanderWise::GeminiMapper.new(gemini_api)
+
+            # month = routing.params['departureDate'].split('-')[1].to_i
+            # destination = routing.params['destinationLocationCode']
+            # origin = routing.params['originLocationCode']
+
+            # logger.info 'Calling Gemini API'
+            # gemini_answer = gemini_mapper.find_gemini_data(
+            #   "What is your opinion on #{destination} in #{month}?" \
+            #   "Based on historical data, the average price for a flight from #{origin} to #{destination} is $#{flights_analysis.value![:historical_average_data]}." \
+            #   "Does it seem safe based on recent news articles: #{nytimes_articles}?"
+            # )
+
+            # Render the result representation
+            logger.info 'Rendering results'
+            Representer::FlightsArticlesAnalyse.new(
+              misc_data: misc_data,
+              flights: retrieved_flights,
+              articles: retrieved_articles
+            ).to_json
           rescue StandardError => e
             flash[:error] = 'An unexpected error occurred'
             logger.error "Flash Error: #{flash[:error]} - #{e.message}"
