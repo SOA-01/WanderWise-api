@@ -13,7 +13,7 @@ module WanderWise
 
       private
 
-      def analyze_flights(input)
+      def analyze_flights(input) # rubocop:disable Metrics/MethodLength
         historical_average_data = historical_average(input)
         historical_lowest_data = historical_lowest(input)
 
@@ -31,11 +31,13 @@ module WanderWise
         Failure('Could not analyze flight data')
       end
 
-      def historical_average(input)
+      def historical_average(input) # rubocop:disable Metrics/MethodLength
         average_price = Repository::For.klass(Entity::Flight).find_average_price_from_to(
-          input.first.origin_location_code,
-          input.first.destination_location_code
+          input['originLocationCode'],
+          input['destinationLocationCode']
         ).round(2)
+
+        logger.debug("Average price: #{average_price}")
 
         if average_price.nil? || average_price <= 0
           logger.error("Historical average price not found or invalid for: #{input}")
@@ -48,10 +50,10 @@ module WanderWise
         Failure('Could not retrieve historical average data')
       end
 
-      def historical_lowest(input)
+      def historical_lowest(input) # rubocop:disable Metrics/MethodLength
         lowest_price = Repository::For.klass(Entity::Flight).find_best_price_from_to(
-          input.first.origin_location_code,
-          input.first.destination_location_code
+          input['originLocationCode'],
+          input['destinationLocationCode']
         )
 
         logger.debug("Lowest price: #{lowest_price}")

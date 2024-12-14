@@ -20,7 +20,7 @@ RSpec.describe WanderWise::Service::FindArticles do # rubocop:disable Metrics/Bl
     allow(WanderWise::ArticleMapper).to receive(:new).with(mock_news_api).and_return(mock_article_mapper)
   end
 
-  describe '#find_articles' do
+  describe '#find_articles' do # rubocop:disable Metrics/BlockLength
     context 'when articles are found successfully' do
       before do
         allow(mock_article_mapper).to receive(:find_articles).with(input).and_return(Dry::Monads::Success(articles))

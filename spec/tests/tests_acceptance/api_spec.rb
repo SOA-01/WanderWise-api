@@ -16,7 +16,7 @@ def app
   WanderWise::App
 end
 
-RSpec.describe 'API Acceptance Tests' do
+RSpec.describe 'API Acceptance Tests' do # rubocop:disable Metrics/BlockLength
   include Rack::Test::Methods
 
   describe 'Root route' do

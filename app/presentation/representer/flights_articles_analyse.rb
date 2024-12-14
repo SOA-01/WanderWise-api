@@ -9,6 +9,7 @@ require_relative 'misc_data'
 
 module WanderWise
   module Representer
+    # Represents the Flights and Articles Analyse
     class FlightsArticlesAnalyse < Roar::Decorator
       include Roar::JSON
 

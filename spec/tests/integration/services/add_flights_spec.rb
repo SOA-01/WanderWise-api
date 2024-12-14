@@ -7,7 +7,7 @@ require_relative '../../../../app/infrastructure/database/repositories/flights'
 require 'dry/monads'
 include Dry::Monads[:result]
 
-RSpec.describe WanderWise::Service::AddFlights do
+RSpec.describe WanderWise::Service::AddFlights do # rubocop:disable Metrics/BlockLength
   let(:add_flights_service) { described_class.new }
   let(:flight_data) do
     WanderWise::Flight.new(
@@ -24,7 +24,7 @@ RSpec.describe WanderWise::Service::AddFlights do
   end
   let(:input) { { origin_location_code: 'TPE', destination_location_code: 'LAX', departure_date: (Date.today + 7).to_s, adults: 1 } }
 
-  describe '#find_flights' do
+  describe '#find_flights' do # rubocop:disable Metrics/BlockLength
     context 'when flights are found' do
       before do
         puts 'Mocking AmadeusAPI to return empty data' # Debug line
@@ -85,7 +85,7 @@ RSpec.describe WanderWise::Service::AddFlights do
     end
   end
 
-  describe '#call' do
+  describe '#call' do # rubocop:disable Metrics/BlockLength
     context 'when the transaction fails at find_flights' do
       before do
         VCR.use_cassette('amadeus_oauth_token') do

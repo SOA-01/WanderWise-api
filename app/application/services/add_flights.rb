@@ -13,7 +13,7 @@ module WanderWise
       step :find_flights
       step :store_flights
 
-      def find_flights(input)
+      def find_flights(input) # rubocop:disable Metrics/AbcSize,Metrics/MethodLength
         # logger.debug("Finding flights with input: #{input}")
         required_keys = %w[originLocationCode destinationLocationCode departureDate adults]
         missing_keys = required_keys.select { |key| input[key].nil? }

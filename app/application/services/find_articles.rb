@@ -27,7 +27,7 @@ module WanderWise
         Failure('No articles found for the given criteria.')
       end
 
-      def articles_from_news_api(input)
+      def articles_from_news_api(input) # rubocop:disable Metrics/AbcSize,Metrics/MethodLength
         logger.info('Creating article mapper')
         api_gateway = NYTimesAPI.new
         article_mapper = ArticleMapper.new(api_gateway)

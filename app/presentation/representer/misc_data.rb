@@ -5,6 +5,7 @@ require 'roar/json'
 
 module WanderWise
   module Representer
+    # Represents miscellaneous data
     class MiscData < Roar::Decorator
       include Roar::JSON
 
