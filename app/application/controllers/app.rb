@@ -156,6 +156,37 @@ module WanderWise
             { error: 'Internal Server Error' }.to_json
           end
         end
+
+        routing.on 'opinion' do
+          routing.get do
+            logger.info 'Received opinion request'
+
+            params = routing.params
+
+            if params.nil? || params.empty?
+              response.status = 400
+              return { error: 'No parameters provided' }.to_json
+            end
+
+            opinion_made = Service::GetOpinion.new.call(params)
+
+            if opinion_made.failure?
+              failed_response = Representer::HttpResponse.new(
+                WanderWise::Response::ApiResult.new(status: :internal_error, message: opinion_made.failure)
+              )
+              routing.halt failed_response.http_status_code, failed_response.to_json
+            end
+
+            opinion_data = opinion_made.value!
+            representable_data = OpenStruct.new(opinion: opinion_data)
+
+            Representer::OpinionRepresenter.new(representable_data).to_json
+          rescue StandardError => e
+            logger.error "Error getting opinion: #{e.message}"
+            response.status = 500
+            { error: 'Internal Server Error' }.to_json
+          end
+        end
       end
     end
   end
