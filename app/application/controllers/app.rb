@@ -168,9 +168,8 @@ module WanderWise
             end
 
             begin
-              opinion_data = Timeout.timeout(10) do
+              Timeout.timeout(10) do
                 opinion_made = Service::GetOpinion.new.call(params)
-
                 if opinion_made.failure?
                   failed_response = Representer::HttpResponse.new(
                     WanderWise::Response::ApiResult.new(status: :internal_error, message: opinion_made.failure)
@@ -178,15 +177,15 @@ module WanderWise
                   routing.halt failed_response.http_status_code, failed_response.to_json
                 end
 
-                opinion_made.value!
+                # Return the opinion response
+                opinion_data = opinion_made.value!
+                representable_data = OpenStruct.new(opinion: opinion_data)
+                Representer::Opinion.new(representable_data).to_json
               end
-
-              representable_data = OpenStruct.new(opinion: opinion_data)
-              Representer::Opinion.new(representable_data).to_json
             rescue Timeout::Error
               logger.error 'Opinion request timed out'
               response.status = 200
-              { opinion: 'No opinion available' }.to_json
+              { opinion: 'No opinion available (request timed out)' }.to_json
             rescue StandardError => e
               logger.error "Error getting opinion: #{e.message}"
               response.status = 500

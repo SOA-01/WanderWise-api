@@ -102,7 +102,7 @@ module WanderWise
 
         # Wait for the worker to populate the cache
         max_wait_time = 60 # Maximum wait time in seconds
-        interval = 0.5 # Interval in seconds to check cache
+        interval = 1 # Interval in seconds to check cache
         elapsed_time = 0
 
         while elapsed_time < max_wait_time
