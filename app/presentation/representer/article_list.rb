@@ -8,10 +8,10 @@ require_relative 'article'
 module WanderWise
   module Representer
     # Represents a collection of articles for JSON API output
-    class ArticlesRepresenter < Roar::Decorator
+    class Articles < Roar::Decorator
       include Roar::JSON
 
-      collection :articles, extend: Representer::ArticleRepresenter, class: OpenStruct
+      collection :articles, extend: Representer::Article, class: OpenStruct
     end
   end
 end

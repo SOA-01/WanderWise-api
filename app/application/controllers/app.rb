@@ -81,7 +81,7 @@ module WanderWise
             flight_data = flight_made.value!
 
             representable_data = OpenStruct.new(flights: flight_data)
-            Representer::FlightsRepresenter.new(representable_data).to_json
+            Representer::Flights.new(representable_data).to_json
           rescue StandardError => e
             logger.error "Flight endpoint error: #{e.message}"
             response.status = 500
@@ -111,7 +111,7 @@ module WanderWise
             nytimes_articles = article_made.value!
 
             representable_data = OpenStruct.new(articles: nytimes_articles)
-            Representer::ArticlesRepresenter.new(representable_data).to_json
+            Representer::Articles.new(representable_data).to_json
           rescue StandardError => e
             logger.error "Article endpoint error: #{e.message}"
             response.status = 500
@@ -182,7 +182,7 @@ module WanderWise
               end
 
               representable_data = OpenStruct.new(opinion: opinion_data)
-              Representer::OpinionRepresenter.new(representable_data).to_json
+              Representer::Opinion.new(representable_data).to_json
             rescue Timeout::Error
               logger.error 'Opinion request timed out'
               response.status = 200

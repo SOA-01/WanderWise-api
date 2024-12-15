@@ -34,6 +34,9 @@ gem 'logger'
 gem 'dotenv'
 gem 'ostruct'
 gem 'dry-monads'
+gem 'aws-sdk-sqs', '~> 1.0'
+gem 'shoryuken', '~> 5.0'
+gem 'redis'
 
 group :production do
   gem 'pg'

@@ -7,7 +7,7 @@ require 'roar/hypermedia'
 module WanderWise
   module Representer
     # Represents an article for JSON API output
-    class ArticleRepresenter < Roar::Decorator
+    class Article < Roar::Decorator
       include Roar::JSON
       include Roar::Hypermedia
 

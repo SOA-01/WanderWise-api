@@ -7,7 +7,7 @@ require 'roar/hypermedia'
 module WanderWise
   module Representer
     # Represents a collection of flights for JSON API output
-    class FlightRepresenter < Roar::Decorator
+    class Flight < Roar::Decorator
       include Roar::JSON
       include Roar::Hypermedia
 
