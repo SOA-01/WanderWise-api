@@ -6,7 +6,7 @@ module WanderWise
       @gateway = gateway
     end
 
-    def find_gemini_data(prompt) # rubocop:disable Metrics/AbcSize
+    def get_opinion(prompt) # rubocop:disable Metrics/AbcSize
       response = @gateway.gemini_api_call(prompt)
       text = ''
       response.each do |res|

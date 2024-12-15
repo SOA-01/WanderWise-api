@@ -7,9 +7,9 @@ CODE = 'app/application/controllers'
 # Default task for Puma
 task :default do
   if ENV['RACK_ENV'] == 'production'
-    sh 'bundle exec puma'
+    sh 'bundle exec puma -9 9090'
   else
-    sh 'RACK_ENV=development bundle exec puma'
+    sh 'RACK_ENV=development bundle exec puma -p 9090'
   end
 end
 
@@ -17,19 +17,19 @@ end
 task :test do
   if ENV['RACK_ENV'] == 'production'
     puts 'Running tests in production mode'
-    sh 'RACK_ENV=production COVERAGE=1 rspec spec/app_spec.rb'
-    sh 'RACK_ENV=production COVERAGE=1 rspec spec/api_spec.rb'
-    sh 'RACK_ENV=production COVERAGE=1 rspec spec/data_mapper_spec.rb'
+    sh 'RACK_ENV=production COVERAGE=1 rspec spec/tests/app_spec.rb'
+    sh 'RACK_ENV=production COVERAGE=1 rspec spec/tests/api_spec.rb'
+    sh 'RACK_ENV=production COVERAGE=1 rspec spec/tests/data_mapper_spec.rb'
   else
     puts 'Running tests in development mode'
-    sh 'RACK_ENV=development COVERAGE=1 rspec spec/app_spec.rb'
-    sh 'RACK_ENV=development COVERAGE=1 rspec spec/api_spec.rb'
-    sh 'RACK_ENV=development COVERAGE=1 rspec spec/data_mapper_spec.rb'
+    sh 'RACK_ENV=development COVERAGE=1 rspec spec/tests/app_spec.rb'
+    sh 'RACK_ENV=development COVERAGE=1 rspec spec/tests/api_spec.rb'
+    sh 'RACK_ENV=development COVERAGE=1 rspec spec/tests/data_mapper_spec.rb'
   end
 end
 
 task :spec do
-  ruby 'spec/spec_helper.rb'
+  ruby 'spec/tests/spec_helper.rb'
 end
 
 task :new_session_secret do
@@ -78,6 +78,15 @@ namespace :db do # rubocop:disable Metrics/BlockLength
     Sequel::Migrator.run(app.db, 'db/migrations')
   end
 
+  task migrate_test: :config do
+    Sequel.extension :migration
+    puts 'Migrating test database to latest'
+    puts "Migration path: #{Dir.pwd}/db/migrations"
+    puts 'Files in migration path:'
+    puts Dir.entries('db/migrations') # This should list your migration files
+    Sequel::Migrator.run(app.db, 'db/migrations')
+  end
+
   desc 'Wipe records from all tables'
   task wipe: :config do
     if app.environment == :production
@@ -90,6 +99,15 @@ namespace :db do # rubocop:disable Metrics/BlockLength
 
   desc 'Delete dev or test database file (set correct RACK_ENV)'
   task drop: :config do
+    if app.environment == :production
+      puts 'Do not damage production database!'
+      return
+    end
+    FileUtils.rm(WanderWise::App.config.DB_FILENAME)
+    puts "Deleted #{WanderWise::App.config.DB_FILENAME}"
+  end
+
+  task drop_test: :config do
     if app.environment == :production
       puts 'Do not damage production database!'
       return

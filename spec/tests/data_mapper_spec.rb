@@ -25,8 +25,7 @@ RSpec.describe WanderWise::FlightMapper do # rubocop:disable Metrics/BlockLength
   let(:gateway) { WanderWise::AmadeusAPI.new }
   let(:mapper) { WanderWise::FlightMapper.new(gateway) }
 
-  curr_dir = __dir__
-  let(:fixture_flight) { YAML.load_file("#{curr_dir}/fixtures/amadeus-results.yml") }
+  let(:fixture_flight) { YAML.load_file(File.expand_path('../fixtures/amadeus-results.yml', __dir__)) }
 
   describe '#find_flight' do
     it 'transforms API response into FlightsEntity object' do
@@ -63,8 +62,7 @@ RSpec.describe WanderWise::ArticleMapper do
   let(:gateway) { WanderWise::NYTimesAPI.new }
   let(:mapper) { WanderWise::ArticleMapper.new(gateway) }
 
-  curr_dir = __dir__
-  let(:fixture_articles) { YAML.load_file("#{curr_dir}/fixtures/nytimes-api-results.yml") }
+  let(:fixture_flight) { YAML.load_file(File.expand_path('fixtures/amadeus-results.yml', __dir__)) }
 
   describe '#find_articles' do
     it 'transforms API response into an array of ArticleEntity objects' do

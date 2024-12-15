@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'dry/transaction'
+require 'logger'
 require 'airports'
 
 module WanderWise
@@ -14,11 +15,21 @@ module WanderWise
       private
 
       def find_country(input)
-        country = Airports.find_by_iata_code(input.first.destination_location_code).country
+        country = Airports.find_by_iata_code(input.first.destination_location_code)&.country
+
+        if country.nil?
+          logger.error("Country not found for IATA code: #{input.first.destination_location_code}")
+          return Failure('Unable to find country for the destination location code.')
+        end
 
         Success(country)
-      rescue StandardError
+      rescue StandardError => e
+        logger.error("Error finding country: #{e.message}")
         Failure('Unable to find country for the destination location code.')
+      end
+
+      def logger
+        @logger ||= Logger.new($stdout)
       end
     end
   end

@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'dry/transaction'
+require 'logger'
 
 module WanderWise
   module Service
@@ -13,23 +14,38 @@ module WanderWise
       private
 
       def find_articles(input)
-        input = articles_from_news_api(input)
+        result = articles_from_news_api(input)
 
-        Success(input.value!)
-      rescue StandardError
+        if result.failure?
+          logger.error("Failed to find articles: #{result.failure}")
+          return result
+        end
+
+        Success(result.value!)
+      rescue StandardError => e
+        logger.error("Error finding articles: #{e.message}")
         Failure('No articles found for the given criteria.')
       end
 
-      def articles_from_news_api(input)
-        news_api = NYTimesAPI.new
-        article_mapper = ArticleMapper.new(news_api)
-        article_data = article_mapper.find_articles(input)
-
-        if article_data.empty? || article_data.nil?
-          Failure('No articles found for the given criteria.')
-        else
-          Success(article_data)
+      def articles_from_news_api(input) # rubocop:disable Metrics/AbcSize,Metrics/MethodLength
+        logger.info('Creating article mapper')
+        api_gateway = NYTimesAPI.new
+        article_mapper = ArticleMapper.new(api_gateway)
+        logger.info("Finding articles for: #{input}")
+        articles = article_mapper.find_articles(input)
+        logger.debug("Articles from: #{articles.first(2)}")
+        if articles.nil? || articles.empty?
+          logger.error("No articles found for the given criteria: #{input}")
+          return Failure('No articles found for the given criteria.')
         end
+        Success(articles)
+      rescue StandardError
+        logger.error("Unexpected result from article mapper: #{articles}")
+        Failure('Unexpected error finding articles')
+      end
+
+      def logger
+        @logger ||= Logger.new($stdout)
       end
     end
   end
