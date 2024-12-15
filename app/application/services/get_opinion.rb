@@ -27,10 +27,8 @@ module WanderWise
         Failure('Unable to get opinion.')
       end
 
-      def opinion_from_gemini(input) # rubocop:disable Metrics/MethodLength
+      def opinion_from_gemini(input)
         prompt = construct_prompt(input)
-
-        puts "Prompt: #{prompt}"
 
         gemini_api = GeminiAPI.new
         gemini_mapper = GeminiMapper.new(gemini_api)
@@ -51,7 +49,7 @@ module WanderWise
         month = input['month']
         origin = input['origin']
         historical_flight_data = input['historical_average_data']
-        nytimes_articles = input['nytimes_articles']
+        nytimes_articles = input['articles']
 
         "What is your opinion on travelling to #{destination} in month number #{month}? " \
         "Based on my findings, the average price for a flight from #{origin} " \

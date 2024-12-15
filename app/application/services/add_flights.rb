@@ -61,7 +61,7 @@ module WanderWise
           return Failure('No flights found for the given criteria.')
         end
 
-        logger.debug("Flight data retrieved: #{flight_data.first(5)}")
+        logger.debug('Flight data retrieved')
         Success(flight_data)
       end
 
