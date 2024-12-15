@@ -7,6 +7,7 @@ require 'figaro'
 require 'securerandom'
 require 'logger'
 require 'json'
+require 'timeout'
 
 require_relative '../../presentation/representer/http_response'
 require_relative '../../presentation/responses/api_result'
@@ -80,7 +81,7 @@ module WanderWise
             flight_data = flight_made.value!
 
             representable_data = OpenStruct.new(flights: flight_data)
-            Representer::FlightsRepresenter.new(representable_data).to_json
+            Representer::Flights.new(representable_data).to_json
           rescue StandardError => e
             logger.error "Flight endpoint error: #{e.message}"
             response.status = 500
@@ -110,7 +111,7 @@ module WanderWise
             nytimes_articles = article_made.value!
 
             representable_data = OpenStruct.new(articles: nytimes_articles)
-            Representer::ArticlesRepresenter.new(representable_data).to_json
+            Representer::Articles.new(representable_data).to_json
           rescue StandardError => e
             logger.error "Article endpoint error: #{e.message}"
             response.status = 500
@@ -146,8 +147,6 @@ module WanderWise
               historical_lowest_data: flights_analysis.value![:historical_lowest_data]
             }
 
-            puts "Analysis data: #{analysis_data}"
-
             response.status = 200
             analysis_data.to_json
           rescue StandardError => e
@@ -157,8 +156,8 @@ module WanderWise
           end
         end
 
-        routing.on 'opinion' do
-          routing.get do
+        routing.on 'opinion' do # rubocop:disable Metrics/BlockLength
+          routing.get do # rubocop:disable Metrics/BlockLength
             logger.info 'Received opinion request'
 
             params = routing.params
@@ -168,23 +167,30 @@ module WanderWise
               return { error: 'No parameters provided' }.to_json
             end
 
-            opinion_made = Service::GetOpinion.new.call(params)
+            begin
+              Timeout.timeout(10) do
+                opinion_made = Service::GetOpinion.new.call(params)
+                if opinion_made.failure?
+                  failed_response = Representer::HttpResponse.new(
+                    WanderWise::Response::ApiResult.new(status: :internal_error, message: opinion_made.failure)
+                  )
+                  routing.halt failed_response.http_status_code, failed_response.to_json
+                end
 
-            if opinion_made.failure?
-              failed_response = Representer::HttpResponse.new(
-                WanderWise::Response::ApiResult.new(status: :internal_error, message: opinion_made.failure)
-              )
-              routing.halt failed_response.http_status_code, failed_response.to_json
+                # Return the opinion response
+                opinion_data = opinion_made.value!
+                representable_data = OpenStruct.new(opinion: opinion_data)
+                Representer::Opinion.new(representable_data).to_json
+              end
+            rescue Timeout::Error
+              logger.error 'Opinion request timed out'
+              response.status = 200
+              { opinion: 'No opinion available (request timed out)' }.to_json
+            rescue StandardError => e
+              logger.error "Error getting opinion: #{e.message}"
+              response.status = 500
+              { error: 'Internal Server Error' }.to_json
             end
-
-            opinion_data = opinion_made.value!
-            representable_data = OpenStruct.new(opinion: opinion_data)
-
-            Representer::OpinionRepresenter.new(representable_data).to_json
-          rescue StandardError => e
-            logger.error "Error getting opinion: #{e.message}"
-            response.status = 500
-            { error: 'Internal Server Error' }.to_json
           end
         end
       end

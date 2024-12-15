@@ -14,8 +14,8 @@ module WanderWise
       include Roar::JSON
 
       property :misc_data, extend: Representer::MiscData, class: OpenStruct
-      property :flights, extend: Representer::FlightsRepresenter, class: OpenStruct
-      property :articles, extend: Representer::ArticlesRepresenter, class: OpenStruct
+      property :flights, extend: Representer::Flights, class: OpenStruct
+      property :articles, extend: Representer::Articles, class: OpenStruct
     end
   end
 end

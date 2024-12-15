@@ -10,6 +10,10 @@ module WanderWise
       @gateway = gateway
     end
 
+    def map_to_hash(flights)
+      flights.map(&:to_h)
+    end
+
     # Find and map flight data to entity
     def find_flight(params)
       flight_data = @gateway.fetch_response(params)

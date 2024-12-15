@@ -12,7 +12,6 @@ module WanderWise
 
     # Find and map articles to entity
     def find_articles(keyword)
-      puts "Searching gateway for articles of: #{keyword}"
       articles_data = fetch_articles_data(keyword)
       docs = ArticleDataExtractor.extract_docs(articles_data)
       # Map the articles to entities

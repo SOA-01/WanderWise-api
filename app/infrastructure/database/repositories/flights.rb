@@ -50,6 +50,12 @@ module WanderWise
       end
 
       def self.create_many(entities)
+        # Ensure entities are instances of Entity::Flight
+        entities.each do |entity|
+          raise ArgumentError, "Expected Entity::Flight, got #{entity.class} with value: #{entity.inspect}" unless entity.is_a?(Entity::Flight)
+        end
+
+        # Proceed with creating records
         entities.map { |entity| create(entity) }
       end
 

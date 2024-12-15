@@ -8,10 +8,10 @@ require_relative 'flight'
 module WanderWise
   module Representer
     # Represents a collection of flights for JSON API output
-    class FlightsRepresenter < Roar::Decorator
+    class Flights < Roar::Decorator
       include Roar::JSON
 
-      collection :flights, extend: Representer::FlightRepresenter, class: OpenStruct
+      collection :flights, extend: Representer::Flight, class: OpenStruct
     end
   end
 end
