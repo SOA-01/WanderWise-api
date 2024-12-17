@@ -59,6 +59,8 @@ module WanderWise
             params = routing.params
             logger.info "Received flight query: #{params}"
 
+            request_id = [routing.env['REMOTE_ADDR'], routing.path, Time.now.to_f].hash
+
             # Validate and process the flight request
             request = WanderWise::Requests::NewFlightRequest.new(params).call
             if request.failure?
@@ -82,6 +84,8 @@ module WanderWise
 
             representable_data = OpenStruct.new(flights: flight_data)
             Representer::Flights.new(representable_data).to_json
+            response.status = 202
+            { request_id: request_id, status: 'processing' }.to_json
           rescue StandardError => e
             logger.error "Flight endpoint error: #{e.message}"
             response.status = 500
