@@ -15,7 +15,7 @@ module WanderWise
         YAML.load_file(secrets_file_path)
       end
 
-      @client_key = ENV['GEMINI_API_KEY'] || 'AIzaSyCgj52ZjGWGWrW--aa1AHt0k0fqSg_ZZ5g'
+      @client_key = ENV['GEMINI_API_KEY'] || 'N/A'
 
       @client = Gemini.new(
         credentials: {
