@@ -85,7 +85,7 @@ module FindFlights
 
     # Cache expiry time in seconds (e.g., 1 hour)
     def cache_expiry_time
-      60
+      120
     end
 
     def logger
