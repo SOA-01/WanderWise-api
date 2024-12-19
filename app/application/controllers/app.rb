@@ -53,11 +53,13 @@ module WanderWise
       # API v1 routes
       routing.on 'api', 'v1' do # rubocop:disable Metrics/BlockLength
         # POST /api/v1/flights?origin_location_code=...&destination_location_code=...&departure_date=...&adults=...
-        routing.on 'flights' do
-          routing.post do
+        routing.on 'flights' do # rubocop:disable Metrics/BlockLength
+          routing.post do # rubocop:disable Metrics/BlockLength
             # Extract parameters directly from the query string
             params = routing.params
             logger.info "Received flight query: #{params}"
+
+            request_id = [routing.env['REMOTE_ADDR'], routing.path, Time.now.to_f].hash
 
             # Validate and process the flight request
             request = WanderWise::Requests::NewFlightRequest.new(params).call
@@ -82,6 +84,12 @@ module WanderWise
 
             representable_data = OpenStruct.new(flights: flight_data)
             Representer::Flights.new(representable_data).to_json
+            response.status = 202
+            {
+              request_id: request_id,
+              status: 'processing',
+              response: { code: response.status }
+            }.to_json
           rescue StandardError => e
             logger.error "Flight endpoint error: #{e.message}"
             response.status = 500
